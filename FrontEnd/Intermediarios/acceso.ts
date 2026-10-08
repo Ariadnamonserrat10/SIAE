@@ -5,6 +5,7 @@ export default defineNuxtRouteMiddleware(async to=>{
   // En SSR se reenvía la cookie al servidor; nunca se expone el secreto a JavaScript.
   const {usuario}=await useRequestFetch()<{usuario:UsuarioSesion}>('/api/autenticacion/sesion');
   const destino=usuario.rol==='MONITOR'?'/monitor':'/oficina';
+  if(to.path==='/crear-cuenta' && usuario.rol==='SUPERADMIN') return;
   if(to.path!==destino) return navigateTo(destino);
  }catch(error:any){
   if(error?.statusCode===401 || error?.response?.status===401) return navigateTo('/');

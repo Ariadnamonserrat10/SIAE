@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import {useFetch,createError} from '#imports';
-import PanelAcceso from '../Componentes/PanelAcceso.vue';
-import type {UsuarioSesion} from '../Servicios/autenticacion';
+import Panel from '../Vistas/Oficina.vue';
 definePageMeta({middleware:'acceso'});
-const {data,error}=await useFetch<{usuario:UsuarioSesion}>('/api/oficina');
-if(error.value) throw createError({statusCode:error.value.statusCode||503,statusMessage:'No se pudo cargar tu perfil.'});
 </script>
-<template><PanelAcceso v-if="data" :usuario="data.usuario" titulo="Panel de oficina" /></template>
+<template><div class="panel-institucional"><ClientOnly><Panel/><template #fallback><p class="p-4" role="status">Cargando tu panel…</p></template></ClientOnly></div></template>
