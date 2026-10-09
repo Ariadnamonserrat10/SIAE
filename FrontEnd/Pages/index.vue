@@ -39,7 +39,7 @@
 
 <script>
 import logoTecnologico from '../img/tecnologico-tlaxiaco.png';
-// import { authService } from '../servicios/autenticacion';
+import { autenticacion } from '../Servicios/autenticacion';
 export default {
   name: "Login",
   data() {
@@ -89,10 +89,10 @@ export default {
           password: this.password,
           userType: this.selectedUserType
         };
-        this.errorMessage = "Servicio de autenticación no configurado";
-        void credentials;
+        const { usuario } = await autenticacion.iniciar(credentials);
+        await this.$router.push(usuario.rol === 'MONITOR' ? '/monitor' : '/oficina');
       } catch (error) {
-        this.errorMessage = error.response?.data?.message || error.message || "Error al iniciar sesión";
+        this.errorMessage = error.data?.message || error.message || "Error al iniciar sesión";
       } finally {
         this.isLoading = false;
       }
