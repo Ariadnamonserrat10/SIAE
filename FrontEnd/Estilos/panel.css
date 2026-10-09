@@ -1,0 +1,28 @@
+/* Identidad compartida por Oficina y Monitor. */
+.panel-institucional {color:var(--text-dark);min-height:100vh;background:var(--fondo-institucional)}
+.panel-institucional .app-container{background:var(--fondo-institucional)}
+.panel-institucional .sidebar,.panel-institucional .sidebar-admin,.panel-institucional .sidebar-superadmin{background:var(--degradado-navegacion)}
+.panel-institucional .app-icon{background:#f6f9ff;border-radius:18px;overflow:hidden;flex-shrink:0}
+.panel-institucional .logo-tecnologico{width:100%;height:100%;object-fit:contain;padding:4px}
+.panel-institucional .card,.panel-institucional .stat-card{border:1px solid #fff;border-radius:20px;box-shadow:0 8px 24px #183b8c0c;overflow:hidden}
+.panel-institucional .modal-content{background:linear-gradient(135deg,#f8fbff,#e8f0ff);border:1px solid white;border-radius:24px;box-shadow:0 18px 60px #15264a30;animation:entrada-panel .2s ease-out}
+.panel-institucional .btn-primary{background:var(--degradado-accion);border-color:transparent;border-radius:12px;box-shadow:0 4px 12px #245cdb20}
+.panel-institucional .form-control,.panel-institucional .form-select{border-radius:12px;background-color:#f7faff;border-color:#cfddf4}
+.panel-institucional .alert{border-radius:16px;animation:entrada-panel .2s ease-out}
+.panel-institucional .card-header.bg-primary,.panel-institucional .bg-primary{background:var(--degradado-navegacion)!important}
+.panel-institucional .btn:focus-visible,.panel-institucional .nav-item:focus-visible{outline:3px solid #69b8ff;outline-offset:3px}
+@keyframes entrada-panel{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.panel-institucional *{animation:none!important;transition:none!important}}
+
+.marca-monitor{display:flex;align-items:center;gap:16px;padding:20px 28px;background:var(--fondo-institucional)}.marca-monitor img{width:54px;height:60px;object-fit:contain}.marca-monitor strong{display:block;font-size:24px}.marca-monitor span{color:var(--text-muted)}
+
+.panel-institucional .content.bg-light{background:var(--fondo-institucional)!important}
+.panel-institucional .btn-success{background:var(--degradado-accion);border-color:transparent;color:#fff;border-radius:12px}
+.panel-institucional .stat-icon{background:#e4edff!important;color:var(--brand)}
+.panel-institucional .stat-icon svg{fill:currentColor}
+.panel-institucional .progress-bar.bg-success{background:var(--degradado-accion)!important}
+.panel-institucional .nav-item[role=button]:focus-visible{outline:3px solid white;outline-offset:2px}
+.panel-institucional .app-logo-section .app-icon{width:52px;height:58px;background:#f5f8ff!important;border-radius:14px}
+
+.panel-institucional .register-page .bg-gradient{background:var(--fondo-institucional)!important}
+.panel-institucional .logo-mark{background:white!important}
