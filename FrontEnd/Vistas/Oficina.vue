@@ -114,6 +114,42 @@
               <span class="nav-label" v-if="!sidebarCollapsed">Clubs</span>
               <span class="nav-active-indicator" v-if="currentView === 'Dashboard' && !sidebarCollapsed"></span>
             </a>
+
+             <a
+               v-if="isSuperAdmin || isAdmin"
+               class="nav-item" 
+               :class="{ 'nav-item-active': currentView === 'AlumnosUnregistered' }"
+               @click.prevent="setView('AlumnosUnregistered')"
+              role="button" tabindex="0" @keydown.enter.prevent="$event.currentTarget.click()" @keydown.space.prevent="$event.currentTarget.click()">
+              <span class="nav-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke-linecap="round"/>
+                  <circle cx="9" cy="7" r="4" stroke-linecap="round"/>
+                  <line x1="19" y1="8" x2="19" y2="14" stroke-linecap="round"/>
+                  <line x1="22" y1="11" x2="16" y2="11" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <span class="nav-label" v-if="!sidebarCollapsed">Sin registrar</span>
+              <span class="nav-active-indicator" v-if="currentView === 'AlumnosUnregistered' && !sidebarCollapsed"></span>
+            </a>
+
+             <a
+               v-if="isSuperAdmin || isAdmin"
+               class="nav-item" 
+               :class="{ 'nav-item-active': currentView === 'AlumnosRegistered' }"
+               @click.prevent="setView('AlumnosRegistered')"
+              role="button" tabindex="0" @keydown.enter.prevent="$event.currentTarget.click()" @keydown.space.prevent="$event.currentTarget.click()">
+              <span class="nav-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke-linecap="round"/>
+                  <circle cx="9" cy="7" r="4" stroke-linecap="round"/>
+                  <path d="M23 21v-2a4 4 0 00-3-3.87" stroke-linecap="round"/>
+                  <path d="M16 3.13a4 4 0 010 7.75" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <span class="nav-label" v-if="!sidebarCollapsed">Registrados</span>
+              <span class="nav-active-indicator" v-if="currentView === 'AlumnosRegistered' && !sidebarCollapsed"></span>
+            </a>
           </div>
 
 </nav>
@@ -138,32 +174,41 @@
  <div v-if="errorMsg" class="alert alert-danger" role="alert">{{errorMsg}}</div>
  <div v-if="toastMsg" class="alert alert-success" role="status">{{toastMsg}}</div>
  <p v-if="cargando" role="status">Cargando…</p>
+ <AlumnosUnregistered v-else-if="currentView==='AlumnosUnregistered'" :clubs="clubs" :carreras="carreras" :alumnos="alumnos" @request-reload-alumnos="recargarAlumnos" @alumno-registrado="handleAlumnoRegistrado" @show-error="showError" @show-toast="showToast" />
+ <AlumnosRegistered v-else-if="currentView==='AlumnosRegistered'" :clubs="clubs" :carreras="carreras" :alumnos="alumnos" :can-manage="isSuperAdmin" @add-alumno="handleAddAlumno" @update-alumno="handleUpdateAlumno" @request-reload-alumnos="recargarAlumnos" @show-error="showError" @show-toast="showToast" />
  <Gestion v-else-if="currentView==='Gestion' && isSuperAdmin" :usuarios="usuarios" :clubs="clubs" @show-error="showError" @show-toast="showToast" @refresh="cargarDatos" />
  <Dashboard v-else-if="!cargando" :clubs="clubs" :alumnos="[]" :usuarios="usuarios" :periodo-activo="null" :usuario-actual="usuarioActual" :total-monitores="totalMonitores" @add-club="handleAddClub" @edit-club="handleEditClub" @delete-club="handleDeleteClub" @refresh="cargarDatos" @show-error="showError" />
  </main></div></template>
 <script>
 import Gestion from '../Componentes/Gestion.vue';
 import Dashboard from '../Componentes/Resumen.vue';
-import {getClubs,getUsuarios,createClub,updateClub,deleteClub} from '../Servicios/api';
+import AlumnosUnregistered from '../Componentes/AlumnosUnregistered.vue';
+import AlumnosRegistered from '../Componentes/AlumnosRegistered.vue';
+import {getClubs,getUsuarios,getAlumnos,getCarreras,createClub,updateClub,deleteClub} from '../Servicios/api';
 import {authService} from '../Servicios/sesion-panel';
 import {resolveFotoUrl} from '../Servicios/imagenes';
 import api from '../Servicios/cliente-http';
 export default {
- components:{Gestion,Dashboard},
- data:()=>({usuarioActual:{},usuarioActualImageError:false,currentView:'Dashboard',clubs:[],usuarios:[],totalMonitores:0,cargando:true,errorMsg:'',toastMsg:'',sidebarCollapsed:false,sidebarOpen:false,isMobile:false}),
+ components:{Gestion,Dashboard,AlumnosUnregistered,AlumnosRegistered},
+ data:()=>({usuarioActual:{},usuarioActualImageError:false,currentView:'Dashboard',clubs:[],usuarios:[],alumnos:[],carreras:[],totalMonitores:0,cargando:true,errorMsg:'',toastMsg:'',sidebarCollapsed:false,sidebarOpen:false,isMobile:false}),
  computed:{isSuperAdmin(){return this.usuarioActual.rol==='SUPERADMIN'},isAdmin(){return this.usuarioActual.rol==='ADMIN'}},
  methods:{
  resolveFotoUrl,
  getUserInitials(){return (this.usuarioActual.nombre||'U').split(' ').slice(0,2).map(n=>n[0]).join('')},
  handleImageError(){this.usuarioActualImageError=true},
  checkMobile(){this.isMobile=window.innerWidth<=900;if(!this.isMobile)this.sidebarOpen=false},
- setView(view){if(!['Gestion','Dashboard'].includes(view)||view==='Gestion'&&!this.isSuperAdmin)return;this.currentView=view;this.sidebarOpen=false;this.errorMsg='';this.toastMsg=''},
+ setView(view){if(!['Gestion','Dashboard','AlumnosUnregistered','AlumnosRegistered'].includes(view)||view==='Gestion'&&!this.isSuperAdmin)return;this.currentView=view;this.sidebarOpen=false;this.errorMsg='';this.toastMsg=''},
  showError(message){this.errorMsg=message;this.toastMsg=''},showToast(message){this.toastMsg=message;this.errorMsg=''},
  async cerrarSesion(){try{await authService.logout();await this.$router.push('/')}catch{this.showError('No se pudo cerrar la sesión. Intenta nuevamente.')}},
- async cargarDatos(){try{const rows=await getClubs();this.clubs=rows.map(r=>({...r,id:Number(r.id),cupo:Number(r.cupo_limite),ocupados:Number(r.cupo_ocupado||0)}));if(this.isSuperAdmin)this.usuarios=await getUsuarios();this.totalMonitores=(await api.get('/resumen')).data.monitores;}catch(e){this.showError(e.message||'No se pudieron cargar los datos.')}},
+ async cargarDatos(){try{const rows=await getClubs();this.clubs=rows.map(r=>({...r,id:Number(r.id),cupo:Number(r.cupo_limite),ocupados:Number(r.cupo_ocupado||0)}));this.carreras=await getCarreras();await this.cargarAlumnos();if(this.isSuperAdmin)this.usuarios=await getUsuarios();this.totalMonitores=(await api.get('/resumen')).data.monitores;}catch(e){this.showError(e.message||'No se pudieron cargar los datos.')}},
  async handleAddClub(club){try{await createClub({...club,cupo_limite:Number(club.cupo)});await this.cargarDatos();this.showToast('Club creado correctamente.')}catch(e){this.showError(e.message)}},
  async handleEditClub({id,club}){try{await updateClub(id,{...club,cupo_limite:Number(club.cupo)});await this.cargarDatos();this.showToast('Club actualizado.')}catch(e){this.showError(e.message)}},
- async handleDeleteClub(id){try{await deleteClub(id);await this.cargarDatos();this.showToast('Club eliminado.')}catch(e){this.showError(e.message)}}
+ async handleDeleteClub(id){try{await deleteClub(id);await this.cargarDatos();this.showToast('Club eliminado.')}catch(e){this.showError(e.message)}},
+ async cargarAlumnos(){const rows=await getAlumnos();this.alumnos=rows.map(r=>{const club=this.clubs.find(c=>Number(c.id)===Number(r.id_club));const carrera=this.carreras.find(c=>Number(c.id)===Number(r.carrera_id));return{id:r.id,nombre:r.nombre,apellidoP:r.apellidoP,apellidoM:r.apellidoM,carrera:carrera?carrera.nombre:'',semestre:r.semestre_id??'',control:r.numeroControl,telefono:r.telefono||'',clubId:r.id_club!=null?Number(r.id_club):null,club_id:r.id_club!=null?Number(r.id_club):null,club:club?club.nombre:'',opciones:[r.opcion_1,r.opcion_2,r.opcion_3].filter(Boolean)}})},
+ handleAlumnoRegistrado(){this.recargarAlumnos()},
+ handleAddAlumno(alumno){this.alumnos.push({...alumno})},
+ handleUpdateAlumno({index,alumno}){if(index<0||index>=this.alumnos.length)return;this.alumnos.splice(index,1,{...this.alumnos[index],...alumno})},
+ async recargarAlumnos(){try{await this.cargarAlumnos()}catch(e){this.showError(e.message)}}
  },
  async mounted(){this.checkMobile();window.addEventListener('resize',this.checkMobile);try{this.usuarioActual=await authService.getCurrentUser();await this.cargarDatos()}catch(e){this.showError(e.message)}finally{this.cargando=false}},
  beforeUnmount(){window.removeEventListener('resize',this.checkMobile)}
