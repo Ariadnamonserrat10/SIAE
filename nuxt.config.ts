@@ -38,7 +38,7 @@ export default defineNuxtConfig({
     databasePassword: process.env.PG_PASSWORD || '',
     databaseSslCa: process.env.PG_SSL_CA || '',
     uploadsDir: process.env.SIAE_UPLOADS_DIR || fileURLToPath(new URL('./.data/uploads', import.meta.url)),
-    databaseName: process.env.PG_DATABASE || 'siae',
+    databaseName: process.env.PG_DATABASE || 'SIAE',
     tokenPepper: process.env.TOKEN_PEPPER || '',
     sessionSecure: process.env.SESSION_SECURE === 'true',
   },
